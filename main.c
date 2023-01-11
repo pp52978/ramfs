@@ -3,7 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 int main() {
-
+    init_ramfs()
+    int a=test();
     printf("%d",a);
   /*init_ramfs();
   assert(rmkdir("/dir") == 0);

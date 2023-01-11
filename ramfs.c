@@ -34,8 +34,11 @@ int runlink(const char *pathname) {
 }
 
 void init_ramfs() {
-  int a;
+    a++;
 }
-void test(){
-    a =1 ;
+int test(){
+    if(a==2){
+        return 123;
+    }
 }
+
