@@ -24,3 +24,4 @@ int rmkdir(const char *pathname);
 int rrmdir(const char *pathname);
 int runlink(const char *pathname);
 void init_ramfs();
+int test();
