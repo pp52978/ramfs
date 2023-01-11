@@ -40,5 +40,8 @@ int test(){
     if(a==2){
         return 123;
     }
+    else{
+        return 2;
+    }
 }
 
