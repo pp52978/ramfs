@@ -22,7 +22,7 @@ off_t rseek(int fd, off_t offset, int whence) {
 }
 
 int rmkdir(const char *pathname) {
-  // TODO();
+  // TODO();hj
 }
 
 int rrmdir(const char *pathname) {
