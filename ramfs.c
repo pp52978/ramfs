@@ -1,6 +1,6 @@
 #include "ramfs.h"
 /* modify this file freely */
-a=1;
+int a=1;
 int ropen(const char *pathname, int flags) {
   // TODO();
 }
