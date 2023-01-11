@@ -1,6 +1,6 @@
 #include "ramfs.h"
 /* modify this file freely */
-
+a=1;
 int ropen(const char *pathname, int flags) {
   // TODO();
 }
@@ -34,5 +34,8 @@ int runlink(const char *pathname) {
 }
 
 void init_ramfs() {
-  // TODO();
+  int a;
+}
+void test(){
+    a =1 ;
 }
