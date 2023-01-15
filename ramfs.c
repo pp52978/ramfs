@@ -1,6 +1,27 @@
 #include "ramfs.h"
-/* modify this file freely */
-int a=1;
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+define MAX_FD 66000 //同时存在的FD数量
+typedef struct node{
+    enum type{FILE,DIR}type;
+    void *content;
+    char *name;
+    bool Is_open;//当前是否被打开中
+    int fd;//对应的fd
+    int offset;
+}node;
+typedef struct child{
+    int fd;
+    struct child *next;//下一个孩子
+}child;//孩子域
+typedef struct FD{
+    struct node * path;//对应文件位置
+    struct child * child_field;//孩子域
+    bool check;//是否被使用
+}FD;
+FD tree[MAX_FD];
 int ropen(const char *pathname, int flags) {
   // TODO();
 }
@@ -34,14 +55,16 @@ int runlink(const char *pathname) {
 }
 
 void init_ramfs() {
-    a++;
-}
-int test(){
-    if(a==2){
-        return 123;
+    for(int i=0;i<MAX_FD;i++) {
+        tree[i].child_field = NULL;
+        tree[i].path = NULL;
+        tree[i].check = 0;
     }
-    else{
-        return 2;
-    }
+    node *root = malloc(sizeof(node));
+    root -> type = DIR;
+
+
+
 }
+
 
