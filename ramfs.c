@@ -6,7 +6,7 @@
 
 #define MAX_FD 66000 //同时存在的FD数量
 typedef struct node{
-    enum type{FILE,DIR}type;
+    enum type{ff,dd}type;
     void *content;
     char *name;
     bool Is_open;//当前是否被打开中
@@ -62,7 +62,8 @@ void init_ramfs() {
         tree[i].check = 0;
     }
     node *root = malloc(sizeof(node));
-    root -> type = DIR;
+    root -> type = dd;
+
 
 
 
