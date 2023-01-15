@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-define MAX_FD 66000 //同时存在的FD数量
+
+#define MAX_FD 66000 //同时存在的FD数量
 typedef struct node{
     enum type{FILE,DIR}type;
     void *content;
