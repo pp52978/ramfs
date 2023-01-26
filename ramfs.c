@@ -20,7 +20,8 @@ typedef struct node{
 typedef struct FD{
     node * path;//对应文件位置
     int offset;
-    int flags;
+    bool Can_read;
+    bool Can_write;
     bool Is_using;
 }FD;
 FD tree[MAX_FD];
@@ -28,6 +29,16 @@ node root;
 
 int check_O_CREAT(int data){
     if((data>>6)%2==1)
+        return 1;
+    return 0;
+}
+int check_O_TRUNC(int data){
+    if((data>>9)%2==1)
+        return 1;
+    return 0;
+}
+int check_O_APPEND(int data){
+    if((data>>10)%2==1)
         return 1;
     return 0;
 }
@@ -102,6 +113,7 @@ int find_empty_fd(){
         if(tree[i].Is_using == 0)
             return i;
     }
+    return -1;
 }
 int ropen(const char *pathname, int flags) {
     pkg a_name = analyze(pathname);
@@ -138,8 +150,31 @@ int ropen(const char *pathname, int flags) {
         //tree[fd].flags=?;tree[fd].offset=?目录不设置
         return fd;
     }
-    else{
-
+    else{           //地址指向的是文件
+        int fd = find_empty_fd();
+        tree[fd].Is_using = 1;
+        tree[fd].path = now;
+        if(flags%2==1){
+            tree[fd].Can_write = 1;
+            tree[fd].Can_read = 0;//只写
+        }
+        else{
+            tree[fd].Can_read = 1;
+            tree[fd].Can_write = 0;//只读
+            if((flags>>1)%2 ==1)
+                tree[fd].Can_write = 1;//可读可写
+            //确定读写状态
+        }
+        if(check_O_TRUNC(flags)==1&&tree[fd].Can_write==1){//清空
+            free(now->content);//释放空间
+            now->content = NULL;
+            now->size = 0;
+        }
+        if(check_O_APPEND(flags)==1)
+            tree[fd].offset = now->size;
+        else
+            tree[fd].offset = 0;
+        return fd;
     }
     
 
