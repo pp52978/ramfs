@@ -9,7 +9,7 @@ int main() {
     assert(rmkdir("/a/b") == -1);  // 应当给出 error，因为父目录不存在
     int fd;
     assert((fd = ropen("//dir///////1.txt", O_CREAT | O_RDWR)) > 0);  // 创建文件应当
-    成功
+    //成功
     assert(rwrite(fd, "hello", 5) == 5);  // 应当完整地写入
     assert(rseek(fd, 0, SEEK_CUR) == 5);  // 当前 fd 的偏移量应该为 5
     assert(rseek(fd, 0, SEEK_SET) == 0);  // 应当成功将 fd 的偏移量复位到文件开头
