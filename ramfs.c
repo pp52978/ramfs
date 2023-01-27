@@ -1,10 +1,9 @@
 #include "ramfs.h"
 #include <stdbool.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-
 #define MAX_FD 5000 //同时存在的FD数量
+
 typedef struct package{
     int num;
     char *pack[100];//假定路径深度最多为100,可能不够
@@ -27,6 +26,11 @@ typedef struct FD{
 FD tree[MAX_FD];
 node root;
 
+int check_fd(int fd){
+    if(fd>MAX_FD||fd<0)
+        return -1;
+    return 0;
+}
 int check_O_CREAT(int data){
     if((data>>6)%2==1)
         return 1;
@@ -208,6 +212,8 @@ int ropen(const char *pathname, int flags) {
 }
 
 int rclose(int fd) {
+    if(check_fd(fd)==-1)
+        return -1;
     if(tree[fd].Is_using == 0)
         return -1;
     tree[fd].path = NULL;
@@ -216,17 +222,63 @@ int rclose(int fd) {
 }
 
 ssize_t rwrite(int fd, const void *buf, size_t count) {
+    if(check_fd(fd)==-1)
+        return -1;
     if(tree[fd].Is_using == 0||tree[fd].Can_write==0||tree[fd].path->type==dd)
         return -1;
-
+    if(tree[fd].offset + count > tree[fd].path->size){
+        void *newcontent = realloc(tree[fd].path->content,tree[fd].offset+count);
+        tree[fd].path->content = newcontent;
+        for(int i=tree[fd].path->size;i<tree[fd].offset;i++){
+            *(newcontent+i) = '\0';
+        }
+        tree[fd].path->size = tree[fd].offset + count;
+    }
+    memcpy(tree[fd].path->content+tree[fd].offset,buf,count);
+    tree[fd].offset += count;
+    return count;
 }
 
 ssize_t rread(int fd, void *buf, size_t count) {
   // TODO();
+    if(check_fd(fd)==-1)
+        return -1;
+    if(tree[fd].Is_using == 0||tree[fd].Can_read==0||tree[fd].path->type==dd)
+        return -1;
+    if(tree[fd].offset + count > tree[fd].path->size){
+        count = tree[fd].path->size - tree[fd].offset;
+    }
+    memcpy(buf,tree[fd].path->content+tree[fd].offset,count);
+    tree[fd].offset += count;
+    return count;
+
 }
 
 off_t rseek(int fd, off_t offset, int whence) {
   // TODO();
+    if(check_fd(fd)==-1||tree[fd].Is_using==0)
+        return -1;
+    if(whence == 0){
+        if(offset<0)
+            return -1;
+        else
+            tree[fd].offset = offset;
+    }
+    else if(whence == 1){
+        if(tree[fd].offset+offset<0)
+            return -1;
+        else
+            tree[fd].offset += offset;
+    }
+    else if(whence == 2){
+        if(tree[fd].path->size+offset<0)
+            return -1;
+        else
+            tree[fd].offset = tree[fd].path->size+offset;
+    }
+    else
+        return -1;
+    return tree[fd].offset;
 }
 
 int rmkdir(const char *pathname) {
