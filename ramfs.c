@@ -76,7 +76,9 @@ struct package analyze(const char *pathname){
             data.num = -1;
             break;
         }//如果不合法退出
-        data.pack[data.num]=token;
+        char *ntoken = malloc(strlen(token)+1);
+        strcpy(ntoken,token);
+        data.pack[data.num]=ntoken;
         data.num++;
         token=strtok(NULL,"/");
     }
