@@ -1,3 +1,7 @@
+/* our main.c */
+#include "ramfs.h"
+#include <assert.h>
+#include <string.h>
 int notin(int fd, int *fds, int n) {
     for (int i = 0; i < n; i++) {
         if (fds[i] == fd) return 0;
@@ -11,7 +15,7 @@ int genfd(int *fds, int n) {
     }
     return -1;
 }
-int test2() {
+int main() {
     init_ramfs();
     int fd[10];
     int buf[10];
