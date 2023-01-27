@@ -16,7 +16,7 @@ int genfd(int *fds, int n) {
     }
     return -1;
 }
-int test2() {
+int main() {
     init_ramfs();
     int fd[10];
     int buf[10];
