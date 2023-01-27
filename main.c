@@ -1,5 +1,5 @@
 /* our main.c */
-#include "rr/ramfs.h"
+#include "ramfs.h"
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
