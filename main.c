@@ -8,7 +8,7 @@
 #include "ramfs.h"
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
+
 #include <assert.h>
 
 int notin(int fd, int *fds, int n) {
