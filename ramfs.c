@@ -77,7 +77,7 @@ struct package analyze(const char *pathname){
             break;
         }//如果不合法退出
         char *ntoken = malloc(strlen(token)+1);
-        strcpy(ntoken,token); //在windows下必须要分配空间，why？
+        strcpy(ntoken,token);
         data.pack[data.num]=ntoken;
         data.num++;
         token=strtok(NULL,"/");
