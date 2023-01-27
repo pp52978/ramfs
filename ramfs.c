@@ -230,7 +230,7 @@ ssize_t rwrite(int fd, const void *buf, size_t count) {
         void *newcontent = realloc(tree[fd].path->content,tree[fd].offset+count);
         tree[fd].path->content = newcontent;
         for(int i=tree[fd].path->size;i<tree[fd].offset;i++){
-            *(newcontent+i) = '\0';
+            *((char*)newcontent+i) = '\0';
         }
         tree[fd].path->size = tree[fd].offset + count;
     }
