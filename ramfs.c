@@ -26,6 +26,11 @@ typedef struct FD{
 FD tree[MAX_FD];
 node root;
 
+void release_pkg(pkg package){
+    for(int i=0;i<package.num;i++){
+        free(package.pack[i]);
+    }
+}
 int check_fd(int fd){
     if(fd>MAX_FD||fd<0)
         return -1;
@@ -156,31 +161,42 @@ int ropen(const char *pathname, int flags) {
     node * now = &root;//从根目录出发
 
     for(int i = 0;i < a_name.num-1;i++){
-        if(search(a_name.pack[i],now)==NULL)
+        if(search(a_name.pack[i],now)==NULL){
+            release_pkg(a_name);
             return -1;//找不到路径
+        }
+
         else
             now = search(a_name.pack[i],now);
     }//此时的now是目标上级目录
     if(search(a_name.pack[a_name.num-1],now)==NULL){    //找不到最终地址
         if(check_O_CREAT(flags)==1){
             int tmplen = strlen(pathname);
-            if(pathname[tmplen-1] == '/'||now->type==ff)
+            if(pathname[tmplen-1] == '/'||now->type==ff){
+                release_pkg(a_name);
                 return -1;//文件名后是'/'或者上级是文件
+            }
+
             now = creat_file(now,a_name.pack[a_name.num-1]);       //创建
         }
         else{
+            release_pkg(a_name);
             return -1;
         }
     }
     else
         now = search(a_name.pack[a_name.num-1],now);
-    if(now->type == ff && pathname[strlen(pathname)-1]=='/')//文件后有'/'
+    if(now->type == ff && pathname[strlen(pathname)-1]=='/'){
+        release_pkg(a_name);
         return -1;
+    }//文件后有'/'
+
     if(now->type == dd){        //目录省略flag
         int fd = find_empty_fd();
         tree[fd].Is_using = 1;
         tree[fd].path = now;
         //tree[fd].flags=?;tree[fd].offset=?目录不设置
+        release_pkg(a_name);
         return fd;
     }
     else{           //地址指向的是文件
@@ -207,6 +223,7 @@ int ropen(const char *pathname, int flags) {
             tree[fd].offset = now->size;
         else
             tree[fd].offset = 0;
+        release_pkg(a_name);
         return fd;
     }
     
@@ -288,15 +305,22 @@ int rmkdir(const char *pathname) {
         return -1;
     node *start = &root;
     for(int i = 0;i < a_name.num-1;i++){
-        if(search(a_name.pack[i],start)==NULL)
+        if(search(a_name.pack[i],start)==NULL){
+            release_pkg(a_name);
             return -1;//找不到路径
+        }
+
         else
             start = search(a_name.pack[i],start);
     }//此时的start是目标上级目录
-    if (search(a_name.pack[a_name.num-1],start)!=NULL||start->type==ff)
+    if (search(a_name.pack[a_name.num-1],start)!=NULL||start->type==ff){
+        release_pkg(a_name);
         return -1;//已经存在或者上级是文件
+    }
+
     else{
         creat_dir(start,a_name.pack[a_name.num-1]);
+        release_pkg(a_name);
         return 0;
     }
 
@@ -309,17 +333,26 @@ int rrmdir(const char *pathname) {
         return -1;
     node *start = &root;
     for(int i = 0;i < a_name.num-1;i++){
-        if(search(a_name.pack[i],start)==NULL)
+        if(search(a_name.pack[i],start)==NULL){
+            release_pkg(a_name);
             return -1;//找不到路径
+        }
+
         else
             start = search(a_name.pack[i],start);
     }//此时的start是目标上级目录
-    if (search(a_name.pack[a_name.num-1],start)==NULL)
+    if (search(a_name.pack[a_name.num-1],start)==NULL){
+        release_pkg(a_name);
         return -1;//不存在
+    }
+
     node *father = start;
     start = search(a_name.pack[a_name.num-1],start);//start为要删除的目录
-    if(start->type == ff||start->first_child != NULL)
+    if(start->type == ff||start->first_child != NULL){
+        release_pkg(a_name);
         return -1;//是文件或者不是空目录
+    }
+
 
     if(father->first_child == start){
         father->first_child = start->next_brother;
@@ -334,27 +367,41 @@ int rrmdir(const char *pathname) {
 
     free(start->name);
     free(start);
+    release_pkg(a_name);
     return 0;
 }
 
 int runlink(const char *pathname) {
 
     pkg a_name = analyze(pathname);
-    if(a_name.num==-1||a_name.num==0||pathname[strlen(pathname)-1]=='/')
+    if(a_name.num==-1||a_name.num==0)
         return -1;
+    if(pathname[strlen(pathname)-1]=='/'){
+        release_pkg(a_name);
+        return -1;
+    }
     node *start = &root;
     for(int i = 0;i < a_name.num-1;i++){
-        if(search(a_name.pack[i],start)==NULL)
+        if(search(a_name.pack[i],start)==NULL){
+            release_pkg(a_name);
             return -1;//找不到路径
+        }
+
         else
             start = search(a_name.pack[i],start);
     }//此时的start是目标上级目录
-    if (search(a_name.pack[a_name.num-1],start)==NULL)
+    if (search(a_name.pack[a_name.num-1],start)==NULL){
+        release_pkg(a_name);
         return -1;//不存在
+    }
+
     node *father = start;
     start = search(a_name.pack[a_name.num-1],start);//start为要删除的文件
-    if(start->type == dd)
+    if(start->type == dd){
+        release_pkg(a_name);
         return -1;//是目录
+    }
+
 
     if(father->first_child == start){
         father->first_child = start->next_brother;
@@ -371,6 +418,7 @@ int runlink(const char *pathname) {
     free(start->content);
     free(start->name);
     free(start);
+    release_pkg(a_name);
     return 0;
 }
 
