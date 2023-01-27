@@ -327,7 +327,6 @@ int rmkdir(const char *pathname) {
 }
 
 int rrmdir(const char *pathname) {
-
     pkg a_name = analyze(pathname);
     if(a_name.num==-1||a_name.num==0)
         return -1;
