@@ -164,7 +164,7 @@ int ropen(const char *pathname, int flags) {
     if(search(a_name.pack[a_name.num-1],now)==NULL){    //找不到最终地址
         if(check_O_CREAT(flags)==1){
             int tmplen = strlen(pathname);
-            if(pathname[tmplen-1] == '/'||now->type==ff)
+            if(pathname[tmplen-1] == '/')
                 return -1;//文件名后是'/'或者上级是文件
             now = creat_file(now,a_name.pack[a_name.num-1]);       //创建
         }
