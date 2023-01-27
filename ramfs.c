@@ -240,7 +240,7 @@ ssize_t rwrite(int fd, const void *buf, size_t count) {
 }
 
 ssize_t rread(int fd, void *buf, size_t count) {
-  // TODO();
+
     if(check_fd(fd)==-1)
         return -1;
     if(tree[fd].Is_using == 0||tree[fd].Can_read==0||tree[fd].path->type==dd)
@@ -255,7 +255,6 @@ ssize_t rread(int fd, void *buf, size_t count) {
 }
 
 off_t rseek(int fd, off_t offset, int whence) {
-  // TODO();
     if(check_fd(fd)==-1||tree[fd].Is_using==0)
         return -1;
     if(whence == 0){
@@ -302,7 +301,7 @@ int rmkdir(const char *pathname) {
 }
 
 int rrmdir(const char *pathname) {
-  // TODO();
+
     pkg a_name = analyze(pathname);
     if(a_name.num==-1||a_name.num==0)
         return -1;
@@ -336,7 +335,7 @@ int rrmdir(const char *pathname) {
 }
 
 int runlink(const char *pathname) {
-  // TODO()检查末尾
+
     pkg a_name = analyze(pathname);
     if(a_name.num==-1||a_name.num==0||pathname[strlen(pathname)-1]=='/')
         return -1;
@@ -364,6 +363,7 @@ int runlink(const char *pathname) {
         }
         newstart->next_brother = start->next_brother;
     }//维护链表
+
 
     free(start->content);
     free(start->name);
