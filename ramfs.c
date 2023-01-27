@@ -76,9 +76,9 @@ struct package analyze(const char *pathname){
             data.num = -1;
             break;
         }//如果不合法退出
-        char *ntoken = malloc(strlen(token)+1);
-        strcpy(ntoken,token);
-        data.pack[data.num]=ntoken;
+//        char *ntoken = malloc(strlen(token)+1);
+//        strcpy(ntoken,token); 在windows下必须要分配空间，why？
+        data.pack[data.num]=token;
         data.num++;
         token=strtok(NULL,"/");
     }
@@ -164,8 +164,8 @@ int ropen(const char *pathname, int flags) {
     if(search(a_name.pack[a_name.num-1],now)==NULL){    //找不到最终地址
         if(check_O_CREAT(flags)==1){
             int tmplen = strlen(pathname);
-            if(pathname[tmplen-1] == '/')
-                return -1;//文件名后是'/'
+            if(pathname[tmplen-1] == '/'||now->type==ff)
+                return -1;//文件名后是'/'或者上级是文件
             now = creat_file(now,a_name.pack[a_name.num-1]);       //创建
         }
         else{
@@ -293,8 +293,8 @@ int rmkdir(const char *pathname) {
         else
             start = search(a_name.pack[i],start);
     }//此时的start是目标上级目录
-    if (search(a_name.pack[a_name.num-1],start)!=NULL)
-        return -1;//已经存在
+    if (search(a_name.pack[a_name.num-1],start)!=NULL||start->type==ff)
+        return -1;//已经存在或者上级是文件
     else{
         creat_dir(start,a_name.pack[a_name.num-1]);
         return 0;
@@ -334,6 +334,7 @@ int rrmdir(const char *pathname) {
 
     free(start->name);
     free(start);
+    return 0;
 }
 
 int runlink(const char *pathname) {
@@ -370,7 +371,7 @@ int runlink(const char *pathname) {
     free(start->content);
     free(start->name);
     free(start);
-
+    return 0;
 }
 
 void init_ramfs() {
