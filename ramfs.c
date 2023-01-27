@@ -6,7 +6,7 @@
 
 typedef struct package{
     int num;
-    char *pack[100];//假定路径深度最多为100,可能不够
+    char *pack[1000];//假定路径深度最多为100,可能不够
 }pkg;
 typedef struct node{
     enum type{ff,dd}type;
